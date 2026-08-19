@@ -887,6 +887,10 @@ export type Database = {
         }
         Returns: Json
       }
+      rpc_delete_financial_transaction: {
+        Args: { p_id: string; p_reason: string }
+        Returns: undefined
+      }
       rpc_get_sale_receipt: { Args: { p_sale_id: string }; Returns: Json }
       rpc_release_expired_reservations: { Args: never; Returns: undefined }
       rpc_reserve_points: {
