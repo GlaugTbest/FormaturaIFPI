@@ -66,6 +66,9 @@ export default async function RaffleDetailPage({
           <LinkButton variant="outline" size="sm" href={`/admin/rifas/${id}/numeros`}>
             Ver números
           </LinkButton>
+          <LinkButton variant="outline" size="sm" href={`/admin/rifas/${id}/vendas`}>
+            Ver vendas
+          </LinkButton>
           {isAdmin && raffle.status !== "CANCELLED" ? (
             <LinkButton variant="outline" size="sm" href={`/admin/rifas/${id}/editar`}>
               Editar

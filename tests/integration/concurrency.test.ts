@@ -115,7 +115,9 @@ describe("raffle point concurrency", () => {
 
     expect(saleA.error).toBeNull();
     expect(saleB.error).toBeNull();
-    expect(saleA.data).toBe(saleB.data);
+    expect((saleA.data as { saleId: string })?.saleId).toBe(
+      (saleB.data as { saleId: string })?.saleId,
+    );
 
     const { count } = await admin
       .from("raffle_sales")

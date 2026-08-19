@@ -290,6 +290,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "financial_transactions_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "public_payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "financial_transactions_raffle_id_fkey"
             columns: ["raffle_id"]
             isOneToOne: false
@@ -374,6 +381,13 @@ export type Database = {
             columns: ["payment_method_id"]
             isOneToOne: false
             referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_records_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "public_payment_methods"
             referencedColumns: ["id"]
           },
           {
@@ -556,6 +570,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "raffle_sales_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "public_payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "raffle_sales_raffle_id_fkey"
             columns: ["raffle_id"]
             isOneToOne: false
@@ -722,6 +743,21 @@ export type Database = {
       }
     }
     Views: {
+      public_payment_methods: {
+        Row: {
+          id: string | null
+          name: string | null
+        }
+        Insert: {
+          id?: string | null
+          name?: string | null
+        }
+        Update: {
+          id?: string | null
+          name?: string | null
+        }
+        Relationships: []
+      }
       public_raffle_points: {
         Row: {
           point_number: number | null
@@ -849,8 +885,9 @@ export type Database = {
           p_raffle_id: string
           p_reservation_token: string
         }
-        Returns: string
+        Returns: Json
       }
+      rpc_get_sale_receipt: { Args: { p_sale_id: string }; Returns: Json }
       rpc_release_expired_reservations: { Args: never; Returns: undefined }
       rpc_reserve_points: {
         Args: {
