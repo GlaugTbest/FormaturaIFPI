@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, Ticket } from "lucide-react";
 import type { Database } from "@/types/database";
 
 type Role = Database["public"]["Enums"]["user_role"];
@@ -18,6 +18,12 @@ export const navItems: NavItem[] = [
     href: "/admin/dashboard",
     label: "Painel",
     icon: LayoutDashboard,
+    roles: ["ADMIN", "VENDEDOR", "VISUALIZADOR"],
+  },
+  {
+    href: "/admin/rifas",
+    label: "Rifas",
+    icon: Ticket,
     roles: ["ADMIN", "VENDEDOR", "VISUALIZADOR"],
   },
 ];
