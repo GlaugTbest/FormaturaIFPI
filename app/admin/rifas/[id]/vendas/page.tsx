@@ -15,22 +15,18 @@ export default async function RaffleSalesPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: raffle } = await supabase
-    .from("raffles")
-    .select("id, title")
-    .eq("id", id)
-    .single();
+  const [{ data: raffle }, profile, { data: sales }] = await Promise.all([
+    supabase.from("raffles").select("id, title").eq("id", id).single(),
+    getCurrentProfile(),
+    supabase
+      .from("raffle_sales")
+      .select(
+        "id, amount_cents, status, created_at, cancelled_reason, buyers(full_name, phone), payment_methods(name), profiles!raffle_sales_seller_id_fkey(full_name), raffle_sale_points(raffle_points(point_number))",
+      )
+      .eq("raffle_id", id)
+      .order("created_at", { ascending: false }),
+  ]);
   if (!raffle) notFound();
-
-  const profile = await getCurrentProfile();
-
-  const { data: sales } = await supabase
-    .from("raffle_sales")
-    .select(
-      "id, amount_cents, status, created_at, cancelled_reason, buyers(full_name, phone), payment_methods(name), profiles!raffle_sales_seller_id_fkey(full_name), raffle_sale_points(raffle_points(point_number))",
-    )
-    .eq("raffle_id", id)
-    .order("created_at", { ascending: false });
 
   return (
     <div>

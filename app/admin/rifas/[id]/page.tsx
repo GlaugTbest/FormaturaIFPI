@@ -23,18 +23,9 @@ export default async function RaffleDetailPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: raffle } = await supabase
-    .from("raffles")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (!raffle) notFound();
-
-  const profile = await getCurrentProfile();
-  const isAdmin = profile?.role === "ADMIN";
-
-  const [{ data: points }, { data: sales }] = await Promise.all([
+  const [{ data: raffle }, profile, { data: points }, { data: sales }] = await Promise.all([
+    supabase.from("raffles").select("*").eq("id", id).single(),
+    getCurrentProfile(),
     supabase.from("raffle_points").select("status").eq("raffle_id", id),
     supabase
       .from("raffle_sales")
@@ -42,6 +33,9 @@ export default async function RaffleDetailPage({
       .eq("raffle_id", id)
       .eq("status", "CONFIRMED"),
   ]);
+
+  if (!raffle) notFound();
+  const isAdmin = profile?.role === "ADMIN";
 
   const counts = { AVAILABLE: 0, RESERVED: 0, SOLD: 0, CANCELLED: 0 } as Record<
     string,

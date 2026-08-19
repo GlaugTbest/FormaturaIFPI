@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { LinkButton } from "@/components/ui/link-button";
 import { centsToBRL } from "@/lib/money";
+import { getRaffleRevenueSummary } from "@/lib/reports/raffle-revenue";
 
 export const metadata: Metadata = { title: "Financeiro" };
 
@@ -14,10 +15,13 @@ export default async function FinancialOverviewPage() {
   }
 
   const supabase = await createClient();
-  const { data: transactions } = await supabase
-    .from("financial_transactions")
-    .select("type, amount_cents, occurred_on")
-    .is("deleted_at", null);
+  const [{ data: transactions }, raffleRevenue] = await Promise.all([
+    supabase
+      .from("financial_transactions")
+      .select("type, amount_cents, occurred_on")
+      .is("deleted_at", null),
+    getRaffleRevenueSummary(supabase),
+  ]);
 
   const now = new Date();
   const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
@@ -90,6 +94,17 @@ export default async function FinancialOverviewPage() {
         Total de receitas: {centsToBRL(totalIncome)} · Total de despesas:{" "}
         {centsToBRL(totalExpense)}
       </p>
+
+      <div className="mt-8 rounded-lg border p-4">
+        <p className="text-muted-foreground text-xs">Vendas de rifas (mês) — não incluído no Saldo acima</p>
+        <p className="text-xl font-semibold">{centsToBRL(raffleRevenue.monthCents)}</p>
+        <p className="text-muted-foreground mt-1 text-xs">
+          Total de vendas de rifas confirmadas: {centsToBRL(raffleRevenue.totalCents)}. Uma venda
+          confirmada não é automaticamente um lançamento financeiro — registre o repasse em{" "}
+          <span className="font-medium">Receitas</span> (categoria &quot;Rifa&quot;) quando o
+          dinheiro entrar de fato, para então contar no Saldo.
+        </p>
+      </div>
     </div>
   );
 }

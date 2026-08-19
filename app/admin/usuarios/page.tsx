@@ -15,16 +15,19 @@ export default async function UsersPage() {
   }
 
   const supabase = await createClient();
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("id, full_name, role, active, created_at")
-    .order("created_at", { ascending: true });
+  const admin = createAdminClient();
 
   // profiles has no email column (that lives in auth.users) — cross-reference
   // via the Admin API. listUsers pages at 50 by default; perPage covers this
   // app's realistic scale (a graduation committee, not a company directory).
-  const admin = createAdminClient();
-  const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 200 });
+  // Independent queries, run in parallel instead of one after the other.
+  const [{ data: profiles }, { data: authUsers }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, full_name, role, active, created_at")
+      .order("created_at", { ascending: true }),
+    admin.auth.admin.listUsers({ perPage: 200 }),
+  ]);
   const emailById = new Map((authUsers?.users ?? []).map((u) => [u.id, u.email ?? null]));
 
   return (

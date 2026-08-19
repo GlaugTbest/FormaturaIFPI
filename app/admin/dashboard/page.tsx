@@ -4,6 +4,7 @@ import { getCurrentProfile } from "@/lib/auth/session";
 import { centsToBRL } from "@/lib/money";
 import { LinkButton } from "@/components/ui/link-button";
 import { AUDIT_ACTION_LABELS } from "@/lib/audit";
+import { getRaffleRevenueSummary } from "@/lib/reports/raffle-revenue";
 
 export const metadata: Metadata = { title: "Painel" };
 
@@ -15,7 +16,7 @@ export default async function DashboardPage() {
   const isAdmin = profile.role === "ADMIN";
   const supabase = await createClient();
 
-  const [{ count: activeRaffles }, { data: recentSales }] = await Promise.all([
+  const [{ count: activeRaffles }, { data: recentSales }, raffleRevenue] = await Promise.all([
     supabase.from("raffles").select("id", { count: "exact", head: true }).eq("status", "OPEN"),
     supabase
       .from("raffle_sales")
@@ -23,6 +24,7 @@ export default async function DashboardPage() {
       .eq("status", "CONFIRMED")
       .order("created_at", { ascending: false })
       .limit(6),
+    getRaffleRevenueSummary(supabase),
   ]);
 
   let balanceCents = 0;
@@ -86,7 +88,7 @@ export default async function DashboardPage() {
         Resumo do que está acontecendo na comissão.
       </p>
 
-      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mb-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {canSeeFinancials ? (
           <>
             <div className="rounded-lg border p-3">
@@ -110,10 +112,16 @@ export default async function DashboardPage() {
           <p className="text-xl font-semibold">{activeRaffles ?? 0}</p>
         </div>
         <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Vendas recentes</p>
-          <p className="text-xl font-semibold">{recentSales?.length ?? 0}</p>
+          <p className="text-muted-foreground text-xs">Vendas de rifas (mês)</p>
+          <p className="text-xl font-semibold">{centsToBRL(raffleRevenue.monthCents)}</p>
         </div>
       </div>
+      <p className="text-muted-foreground mb-8 text-xs">
+        Total de vendas de rifas confirmadas: {centsToBRL(raffleRevenue.totalCents)}. Esse valor é
+        separado do Saldo — uma venda confirmada não significa dinheiro já lançado no Financeiro
+        (especialmente vendas em dinheiro, só entram no Saldo quando alguém registra o repasse em
+        Financeiro › Receitas).
+      </p>
 
       <div className="mb-8 flex flex-wrap gap-2">
         <LinkButton variant="outline" size="sm" href="/admin/rifas">
