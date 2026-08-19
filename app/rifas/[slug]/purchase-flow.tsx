@@ -36,11 +36,13 @@ export function PurchaseFlow({
   raffleSlug,
   unitPriceCents,
   paymentMethods,
+  reservationTtlMinutes,
 }: {
   raffleId: string;
   raffleSlug: string;
   unitPriceCents: number;
   paymentMethods: PaymentMethod[];
+  reservationTtlMinutes: number;
 }) {
   const router = useRouter();
   const storageKey = `${RESERVATION_STORAGE_KEY_PREFIX}${raffleId}`;
@@ -147,6 +149,7 @@ export function PurchaseFlow({
       p_raffle_id: raffleId,
       p_point_numbers: selected,
       p_reservation_token: token,
+      p_ttl_minutes: reservationTtlMinutes,
     });
 
     setReserving(false);

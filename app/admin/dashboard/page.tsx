@@ -1,20 +1,206 @@
 import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { centsToBRL } from "@/lib/money";
+import { LinkButton } from "@/components/ui/link-button";
+import { AUDIT_ACTION_LABELS } from "@/lib/audit";
 
 export const metadata: Metadata = { title: "Painel" };
 
 export default async function DashboardPage() {
   const profile = await getCurrentProfile();
+  if (!profile) return null;
+
+  const canSeeFinancials = profile.role === "ADMIN" || profile.role === "VISUALIZADOR";
+  const isAdmin = profile.role === "ADMIN";
+  const supabase = await createClient();
+
+  const [{ count: activeRaffles }, { data: recentSales }] = await Promise.all([
+    supabase.from("raffles").select("id", { count: "exact", head: true }).eq("status", "OPEN"),
+    supabase
+      .from("raffle_sales")
+      .select("id, amount_cents, created_at, raffles(title), buyers(full_name)")
+      .eq("status", "CONFIRMED")
+      .order("created_at", { ascending: false })
+      .limit(6),
+  ]);
+
+  let balanceCents = 0;
+  let monthResultCents = 0;
+  let recentExpenses: Array<{
+    id: string;
+    description: string;
+    amount_cents: number;
+    occurred_on: string;
+  }> = [];
+
+  if (canSeeFinancials) {
+    const now = new Date();
+    const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+
+    const [{ data: transactions }, { data: expenses }] = await Promise.all([
+      supabase
+        .from("financial_transactions")
+        .select("type, amount_cents, occurred_on")
+        .is("deleted_at", null),
+      supabase
+        .from("financial_transactions")
+        .select("id, description, amount_cents, occurred_on")
+        .eq("type", "EXPENSE")
+        .is("deleted_at", null)
+        .order("occurred_on", { ascending: false })
+        .limit(5),
+    ]);
+
+    for (const t of transactions ?? []) {
+      const signed = t.type === "INCOME" ? t.amount_cents : -t.amount_cents;
+      balanceCents += signed;
+      if (t.occurred_on >= monthStart) monthResultCents += signed;
+    }
+    recentExpenses = expenses ?? [];
+  }
+
+  let recentActivity: Array<{
+    id: string;
+    action: string;
+    entity_type: string;
+    created_at: string;
+    profiles: { full_name: string } | null;
+  }> = [];
+
+  if (isAdmin) {
+    const { data: activity } = await supabase
+      .from("audit_logs")
+      .select("id, action, entity_type, created_at, profiles(full_name)")
+      .order("created_at", { ascending: false })
+      .limit(10);
+    recentActivity = activity ?? [];
+  }
 
   return (
     <div>
       <h1 className="text-2xl font-semibold tracking-tight">
-        Olá, {profile?.full_name.split(" ")[0]}
+        Olá, {profile.full_name.split(" ")[0]}
       </h1>
-      <p className="text-muted-foreground mt-1 text-sm">
-        O painel com indicadores de rifas e financeiro chega nas próximas
-        etapas.
+      <p className="text-muted-foreground mt-1 mb-6 text-sm">
+        Resumo do que está acontecendo na comissão.
       </p>
+
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {canSeeFinancials ? (
+          <>
+            <div className="rounded-lg border p-3">
+              <p className="text-muted-foreground text-xs">Saldo</p>
+              <p className="text-xl font-semibold">{centsToBRL(balanceCents)}</p>
+            </div>
+            <div className="rounded-lg border p-3">
+              <p className="text-muted-foreground text-xs">Resultado do mês</p>
+              <p
+                className={
+                  "text-xl font-semibold " + (monthResultCents < 0 ? "text-destructive" : "")
+                }
+              >
+                {centsToBRL(monthResultCents)}
+              </p>
+            </div>
+          </>
+        ) : null}
+        <div className="rounded-lg border p-3">
+          <p className="text-muted-foreground text-xs">Rifas ativas</p>
+          <p className="text-xl font-semibold">{activeRaffles ?? 0}</p>
+        </div>
+        <div className="rounded-lg border p-3">
+          <p className="text-muted-foreground text-xs">Vendas recentes</p>
+          <p className="text-xl font-semibold">{recentSales?.length ?? 0}</p>
+        </div>
+      </div>
+
+      <div className="mb-8 flex flex-wrap gap-2">
+        <LinkButton variant="outline" size="sm" href="/admin/rifas">
+          Ver rifas
+        </LinkButton>
+        {canSeeFinancials ? (
+          <LinkButton variant="outline" size="sm" href="/admin/financeiro">
+            Ver financeiro
+          </LinkButton>
+        ) : null}
+        {canSeeFinancials ? (
+          <LinkButton variant="outline" size="sm" href="/admin/relatorios/vendas">
+            Relatório de vendas
+          </LinkButton>
+        ) : null}
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-2">
+        <div>
+          <h2 className="mb-3 font-medium">Vendas recentes</h2>
+          {!recentSales || recentSales.length === 0 ? (
+            <p className="text-muted-foreground text-sm">Nenhuma venda registrada ainda.</p>
+          ) : (
+            <ul className="grid gap-2">
+              {recentSales.map((sale) => (
+                <li key={sale.id} className="rounded-lg border p-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{sale.buyers?.full_name ?? "—"}</span>
+                    <span>{centsToBRL(sale.amount_cents)}</span>
+                  </div>
+                  <p className="text-muted-foreground text-xs">
+                    {sale.raffles?.title ?? "—"} ·{" "}
+                    {new Date(sale.created_at).toLocaleString("pt-BR")}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {canSeeFinancials ? (
+          <div>
+            <h2 className="mb-3 font-medium">Despesas recentes</h2>
+            {recentExpenses.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Nenhuma despesa registrada ainda.</p>
+            ) : (
+              <ul className="grid gap-2">
+                {recentExpenses.map((exp) => (
+                  <li key={exp.id} className="rounded-lg border p-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{exp.description}</span>
+                      <span>{centsToBRL(exp.amount_cents)}</span>
+                    </div>
+                    <p className="text-muted-foreground text-xs">
+                      {new Date(exp.occurred_on + "T00:00:00").toLocaleDateString("pt-BR")}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : null}
+
+        {isAdmin ? (
+          <div className="lg:col-span-2">
+            <h2 className="mb-3 font-medium">Atividade recente</h2>
+            {recentActivity.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Nenhuma atividade registrada ainda.</p>
+            ) : (
+              <ul className="grid gap-1">
+                {recentActivity.map((a) => (
+                  <li
+                    key={a.id}
+                    className="text-muted-foreground flex items-center justify-between border-b py-1.5 text-sm last:border-0"
+                  >
+                    <span>
+                      {AUDIT_ACTION_LABELS[a.action] ?? a.action}
+                      {a.profiles?.full_name ? ` · ${a.profiles.full_name}` : ""}
+                    </span>
+                    <span className="text-xs">{new Date(a.created_at).toLocaleString("pt-BR")}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

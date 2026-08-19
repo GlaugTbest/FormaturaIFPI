@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PurchaseFlow } from "./purchase-flow";
 import { centsToBRL } from "@/lib/money";
+import { getReservationTtlMinutes } from "@/lib/settings";
 
 export async function generateMetadata({
   params,
@@ -59,6 +60,8 @@ export default async function RafflePublicPage({
     .select("status")
     .eq("raffle_id", raffle.id!);
 
+  const reservationTtlMinutes = await getReservationTtlMinutes();
+
   const counts = { AVAILABLE: 0, RESERVED: 0, SOLD: 0, CANCELLED: 0 } as Record<
     string,
     number
@@ -104,6 +107,7 @@ export default async function RafflePublicPage({
           raffleSlug={raffle.slug!}
           unitPriceCents={raffle.unit_price_cents!}
           paymentMethods={paymentMethods ?? []}
+          reservationTtlMinutes={reservationTtlMinutes}
         />
       )}
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { centsToBRL } from "@/lib/money";
+import { getEventInfo } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Rifas",
@@ -10,16 +11,16 @@ export const metadata: Metadata = {
 
 export default async function PublicRafflesPage() {
   const supabase = await createClient();
-  const { data: raffles } = await supabase
-    .from("public_raffles")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const [{ data: raffles }, event] = await Promise.all([
+    supabase.from("public_raffles").select("*").order("created_at", { ascending: false }),
+    getEventInfo(),
+  ]);
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 p-4 py-10 sm:p-10">
       <h1 className="mb-2 text-3xl font-semibold tracking-tight">Rifas</h1>
       <p className="text-muted-foreground mb-8">
-        Escolha seus números e ajude a comissão de formatura.
+        Escolha seus números e apoie {event.name}.
       </p>
 
       {!raffles || raffles.length === 0 ? (

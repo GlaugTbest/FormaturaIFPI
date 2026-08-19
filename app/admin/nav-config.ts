@@ -1,5 +1,15 @@
 import type { LucideIcon } from "lucide-react";
-import { LayoutDashboard, Ticket, Users, Wallet } from "lucide-react";
+import {
+  BarChart3,
+  FileText,
+  History,
+  LayoutDashboard,
+  Settings,
+  Ticket,
+  UserCog,
+  Users,
+  Wallet,
+} from "lucide-react";
 import type { Database } from "@/types/database";
 
 type Role = Database["public"]["Enums"]["user_role"];
@@ -37,6 +47,36 @@ export const navItems: NavItem[] = [
     label: "Financeiro",
     icon: Wallet,
     roles: ["ADMIN", "VISUALIZADOR"],
+  },
+  {
+    href: "/admin/documentos",
+    label: "Documentos",
+    icon: FileText,
+    roles: ["ADMIN", "VISUALIZADOR"],
+  },
+  {
+    href: "/admin/relatorios/vendas",
+    label: "Relatórios",
+    icon: BarChart3,
+    roles: ["ADMIN", "VISUALIZADOR"],
+  },
+  {
+    href: "/admin/auditoria",
+    label: "Auditoria",
+    icon: History,
+    roles: ["ADMIN"],
+  },
+  {
+    href: "/admin/usuarios",
+    label: "Usuários",
+    icon: UserCog,
+    roles: ["ADMIN"],
+  },
+  {
+    href: "/admin/configuracoes",
+    label: "Configurações",
+    icon: Settings,
+    roles: ["ADMIN"],
   },
 ];
 
