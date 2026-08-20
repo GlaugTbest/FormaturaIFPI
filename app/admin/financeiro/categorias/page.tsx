@@ -28,12 +28,15 @@ export default async function CategoriesPage() {
         Categorias financeiras
       </h1>
 
-      <div className="grid gap-8 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
         <div>
-          <h2 className="mb-3 font-medium">Receitas</h2>
-          <ul className="mb-4 grid gap-1 text-sm">
+          <h2 className="label-tag mb-3">Receitas</h2>
+          <ul className="mb-4 flex flex-wrap gap-1.5">
             {income.map((c) => (
-              <li key={c.id} className="text-muted-foreground">
+              <li
+                key={c.id}
+                className="border-border bg-secondary/60 rounded-md border px-2.5 py-1 text-sm"
+              >
                 {c.name}
               </li>
             ))}
@@ -41,10 +44,13 @@ export default async function CategoriesPage() {
           <CategoryForm kind="INCOME" />
         </div>
         <div>
-          <h2 className="mb-3 font-medium">Despesas</h2>
-          <ul className="mb-4 grid gap-1 text-sm">
+          <h2 className="label-tag mb-3">Despesas</h2>
+          <ul className="mb-4 flex flex-wrap gap-1.5">
             {expense.map((c) => (
-              <li key={c.id} className="text-muted-foreground">
+              <li
+                key={c.id}
+                className="border-border bg-secondary/60 rounded-md border px-2.5 py-1 text-sm"
+              >
                 {c.name}
               </li>
             ))}

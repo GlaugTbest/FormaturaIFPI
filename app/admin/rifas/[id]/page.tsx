@@ -52,11 +52,22 @@ export default async function RaffleDetailPage({
             <h1 className="text-2xl font-semibold tracking-tight">
               {raffle.title}
             </h1>
-            <Badge>{statusLabels[raffle.status]}</Badge>
+            <Badge
+              variant={
+                raffle.status === "OPEN"
+                  ? "confirmed"
+                  : raffle.status === "CANCELLED"
+                    ? "void"
+                    : "outline"
+              }
+              stamp
+            >
+              {statusLabels[raffle.status]}
+            </Badge>
           </div>
-          <p className="text-muted-foreground text-sm">/rifas/{raffle.slug}</p>
+          <p className="text-muted-foreground font-figures text-sm">/rifas/{raffle.slug}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <LinkButton variant="outline" size="sm" href={`/admin/rifas/${id}/numeros`}>
             Ver números
           </LinkButton>
@@ -74,22 +85,22 @@ export default async function RaffleDetailPage({
         </div>
       </div>
 
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Vendidos</p>
-          <p className="text-xl font-semibold">{counts.SOLD}</p>
+      <div className="border-border bg-card ring-foreground/8 mb-6 grid grid-cols-2 divide-x divide-y divide-dashed divide-border overflow-hidden rounded-lg border ring-1 sm:grid-cols-4 sm:divide-y-0">
+        <div className="p-3.5">
+          <p className="label-tag">Vendidos</p>
+          <p className="font-figures mt-1 text-xl font-semibold">{counts.SOLD}</p>
         </div>
-        <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Reservados</p>
-          <p className="text-xl font-semibold">{counts.RESERVED}</p>
+        <div className="p-3.5">
+          <p className="label-tag">Reservados</p>
+          <p className="font-figures mt-1 text-xl font-semibold">{counts.RESERVED}</p>
         </div>
-        <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Disponíveis</p>
-          <p className="text-xl font-semibold">{counts.AVAILABLE}</p>
+        <div className="p-3.5">
+          <p className="label-tag">Disponíveis</p>
+          <p className="font-figures mt-1 text-xl font-semibold">{counts.AVAILABLE}</p>
         </div>
-        <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Faturamento</p>
-          <p className="text-xl font-semibold">{centsToBRL(revenue)}</p>
+        <div className="p-3.5">
+          <p className="label-tag">Faturamento</p>
+          <p className="font-figures mt-1 text-xl font-semibold">{centsToBRL(revenue)}</p>
         </div>
       </div>
 
@@ -97,22 +108,22 @@ export default async function RaffleDetailPage({
         <p className="mb-4 text-sm whitespace-pre-wrap">{raffle.description}</p>
       ) : null}
 
-      <dl className="text-muted-foreground mb-6 grid gap-1 text-sm">
+      <dl className="text-muted-foreground mb-6 grid gap-1.5 text-sm">
         <div className="flex gap-2">
-          <dt className="font-medium text-foreground">Valor por número:</dt>
-          <dd>{centsToBRL(raffle.unit_price_cents)}</dd>
+          <dt className="text-foreground font-medium">Valor por número:</dt>
+          <dd className="font-figures">{centsToBRL(raffle.unit_price_cents)}</dd>
         </div>
         <div className="flex gap-2">
-          <dt className="font-medium text-foreground">Início:</dt>
-          <dd>{new Date(raffle.starts_at).toLocaleString("pt-BR")}</dd>
+          <dt className="text-foreground font-medium">Início:</dt>
+          <dd className="font-figures">{new Date(raffle.starts_at).toLocaleString("pt-BR")}</dd>
         </div>
         <div className="flex gap-2">
-          <dt className="font-medium text-foreground">Encerramento:</dt>
-          <dd>{new Date(raffle.ends_at).toLocaleString("pt-BR")}</dd>
+          <dt className="text-foreground font-medium">Encerramento:</dt>
+          <dd className="font-figures">{new Date(raffle.ends_at).toLocaleString("pt-BR")}</dd>
         </div>
         {raffle.google_sheet_url ? (
           <div className="flex gap-2">
-            <dt className="font-medium text-foreground">Planilha:</dt>
+            <dt className="text-foreground font-medium">Planilha:</dt>
             <dd>
               <a
                 href={raffle.google_sheet_url}

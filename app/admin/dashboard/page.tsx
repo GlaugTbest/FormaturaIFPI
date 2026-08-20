@@ -88,18 +88,21 @@ export default async function DashboardPage() {
         Resumo do que está acontecendo na comissão.
       </p>
 
-      <div className="mb-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="border-border bg-card ring-foreground/8 grid grid-cols-2 divide-x divide-y divide-dashed divide-border overflow-hidden rounded-lg border ring-1 sm:grid-cols-4 sm:divide-y-0">
         {canSeeFinancials ? (
           <>
-            <div className="rounded-lg border p-3">
-              <p className="text-muted-foreground text-xs">Saldo</p>
-              <p className="text-xl font-semibold">{centsToBRL(balanceCents)}</p>
+            <div className="p-4">
+              <p className="label-tag">Saldo</p>
+              <p className="font-figures mt-1 text-xl font-semibold">
+                {centsToBRL(balanceCents)}
+              </p>
             </div>
-            <div className="rounded-lg border p-3">
-              <p className="text-muted-foreground text-xs">Resultado do mês</p>
+            <div className="p-4">
+              <p className="label-tag">Resultado do mês</p>
               <p
                 className={
-                  "text-xl font-semibold " + (monthResultCents < 0 ? "text-destructive" : "")
+                  "font-figures mt-1 text-xl font-semibold " +
+                  (monthResultCents < 0 ? "text-void" : "")
                 }
               >
                 {centsToBRL(monthResultCents)}
@@ -107,16 +110,18 @@ export default async function DashboardPage() {
             </div>
           </>
         ) : null}
-        <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Rifas ativas</p>
-          <p className="text-xl font-semibold">{activeRaffles ?? 0}</p>
+        <div className="p-4">
+          <p className="label-tag">Rifas ativas</p>
+          <p className="font-figures mt-1 text-xl font-semibold">{activeRaffles ?? 0}</p>
         </div>
-        <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Vendas de rifas (mês)</p>
-          <p className="text-xl font-semibold">{centsToBRL(raffleRevenue.monthCents)}</p>
+        <div className="p-4">
+          <p className="label-tag">Vendas de rifas (mês)</p>
+          <p className="font-figures mt-1 text-xl font-semibold">
+            {centsToBRL(raffleRevenue.monthCents)}
+          </p>
         </div>
       </div>
-      <p className="text-muted-foreground mb-8 text-xs">
+      <p className="text-muted-foreground mt-3 mb-8 text-xs">
         Total de vendas de rifas confirmadas: {centsToBRL(raffleRevenue.totalCents)}. Esse valor é
         separado do Saldo — uma venda confirmada não significa dinheiro já lançado no Financeiro
         (especialmente vendas em dinheiro, só entram no Saldo quando alguém registra o repasse em
@@ -139,23 +144,28 @@ export default async function DashboardPage() {
         ) : null}
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div>
-          <h2 className="mb-3 font-medium">Vendas recentes</h2>
+          <h2 className="mb-1 font-medium">Vendas recentes</h2>
           {!recentSales || recentSales.length === 0 ? (
             <p className="text-muted-foreground text-sm">Nenhuma venda registrada ainda.</p>
           ) : (
-            <ul className="grid gap-2">
+            <ul>
               {recentSales.map((sale) => (
-                <li key={sale.id} className="rounded-lg border p-3 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{sale.buyers?.full_name ?? "—"}</span>
-                    <span>{centsToBRL(sale.amount_cents)}</span>
+                <li
+                  key={sale.id}
+                  className="receipt-divider flex items-center justify-between gap-3 py-2.5 text-sm first:border-t-0"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{sale.buyers?.full_name ?? "—"}</p>
+                    <p className="text-muted-foreground truncate text-xs">
+                      {sale.raffles?.title ?? "—"} ·{" "}
+                      {new Date(sale.created_at).toLocaleString("pt-BR")}
+                    </p>
                   </div>
-                  <p className="text-muted-foreground text-xs">
-                    {sale.raffles?.title ?? "—"} ·{" "}
-                    {new Date(sale.created_at).toLocaleString("pt-BR")}
-                  </p>
+                  <span className="font-figures shrink-0 font-medium">
+                    {centsToBRL(sale.amount_cents)}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -164,20 +174,25 @@ export default async function DashboardPage() {
 
         {canSeeFinancials ? (
           <div>
-            <h2 className="mb-3 font-medium">Despesas recentes</h2>
+            <h2 className="mb-1 font-medium">Despesas recentes</h2>
             {recentExpenses.length === 0 ? (
               <p className="text-muted-foreground text-sm">Nenhuma despesa registrada ainda.</p>
             ) : (
-              <ul className="grid gap-2">
+              <ul>
                 {recentExpenses.map((exp) => (
-                  <li key={exp.id} className="rounded-lg border p-3 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{exp.description}</span>
-                      <span>{centsToBRL(exp.amount_cents)}</span>
+                  <li
+                    key={exp.id}
+                    className="receipt-divider flex items-center justify-between gap-3 py-2.5 text-sm first:border-t-0"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{exp.description}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {new Date(exp.occurred_on + "T00:00:00").toLocaleDateString("pt-BR")}
+                      </p>
                     </div>
-                    <p className="text-muted-foreground text-xs">
-                      {new Date(exp.occurred_on + "T00:00:00").toLocaleDateString("pt-BR")}
-                    </p>
+                    <span className="font-figures shrink-0 font-medium">
+                      {centsToBRL(exp.amount_cents)}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -187,21 +202,23 @@ export default async function DashboardPage() {
 
         {isAdmin ? (
           <div className="lg:col-span-2">
-            <h2 className="mb-3 font-medium">Atividade recente</h2>
+            <h2 className="mb-1 font-medium">Atividade recente</h2>
             {recentActivity.length === 0 ? (
               <p className="text-muted-foreground text-sm">Nenhuma atividade registrada ainda.</p>
             ) : (
-              <ul className="grid gap-1">
+              <ul>
                 {recentActivity.map((a) => (
                   <li
                     key={a.id}
-                    className="text-muted-foreground flex items-center justify-between border-b py-1.5 text-sm last:border-0"
+                    className="receipt-divider text-muted-foreground flex items-center justify-between py-2 text-sm first:border-t-0"
                   >
                     <span>
                       {AUDIT_ACTION_LABELS[a.action] ?? a.action}
                       {a.profiles?.full_name ? ` · ${a.profiles.full_name}` : ""}
                     </span>
-                    <span className="text-xs">{new Date(a.created_at).toLocaleString("pt-BR")}</span>
+                    <span className="font-figures text-xs">
+                      {new Date(a.created_at).toLocaleString("pt-BR")}
+                    </span>
                   </li>
                 ))}
               </ul>

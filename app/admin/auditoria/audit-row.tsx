@@ -28,17 +28,21 @@ export function AuditRow({
 
   return (
     <>
-      <tr className="border-b last:border-0">
-        <td className="py-2 pr-4">{AUDIT_ACTION_LABELS[action] ?? action}</td>
-        <td className="py-2 pr-4">
+      <tr className="border-border border-b border-dashed last:border-0">
+        <td className="py-2.5 pr-4">{AUDIT_ACTION_LABELS[action] ?? action}</td>
+        <td className="py-2.5 pr-4">
           <div>{AUDIT_ENTITY_TYPE_LABELS[entityType] ?? entityType}</div>
           {entityId ? (
-            <div className="text-muted-foreground font-mono text-xs">{entityId.slice(0, 8)}</div>
+            <div className="text-muted-foreground font-figures text-xs">
+              {entityId.slice(0, 8)}
+            </div>
           ) : null}
         </td>
-        <td className="py-2 pr-4">{userName ?? "Sistema / anônimo"}</td>
-        <td className="py-2 pr-4">{new Date(createdAt).toLocaleString("pt-BR")}</td>
-        <td className="py-2 pr-4">
+        <td className="py-2.5 pr-4">{userName ?? "Sistema / anônimo"}</td>
+        <td className="font-figures py-2.5 pr-4">
+          {new Date(createdAt).toLocaleString("pt-BR")}
+        </td>
+        <td className="py-2.5 pr-4">
           {hasDetails ? (
             <Button variant="outline" size="sm" onClick={() => setOpen((v) => !v)}>
               {open ? "Ocultar" : "Detalhes"}
@@ -47,29 +51,29 @@ export function AuditRow({
         </td>
       </tr>
       {open ? (
-        <tr className="border-b last:border-0">
-          <td colSpan={5} className="bg-muted/40 py-3">
-            <div className="grid gap-2 sm:grid-cols-3">
+        <tr className="border-border border-b border-dashed last:border-0">
+          <td colSpan={5} className="bg-secondary/50 py-3">
+            <div className="grid gap-3 sm:grid-cols-3">
               {oldData !== null ? (
                 <div>
-                  <p className="mb-1 text-xs font-medium">Antes</p>
-                  <pre className="overflow-x-auto rounded bg-black/5 p-2 text-xs dark:bg-white/5">
+                  <p className="label-tag mb-1">Antes</p>
+                  <pre className="border-border bg-card font-figures overflow-x-auto rounded-md border p-2 text-xs">
                     {JSON.stringify(oldData, null, 2)}
                   </pre>
                 </div>
               ) : null}
               {newData !== null ? (
                 <div>
-                  <p className="mb-1 text-xs font-medium">Depois</p>
-                  <pre className="overflow-x-auto rounded bg-black/5 p-2 text-xs dark:bg-white/5">
+                  <p className="label-tag mb-1">Depois</p>
+                  <pre className="border-confirmed/30 bg-card font-figures overflow-x-auto rounded-md border p-2 text-xs">
                     {JSON.stringify(newData, null, 2)}
                   </pre>
                 </div>
               ) : null}
               {metadata !== null ? (
                 <div>
-                  <p className="mb-1 text-xs font-medium">Detalhes</p>
-                  <pre className="overflow-x-auto rounded bg-black/5 p-2 text-xs dark:bg-white/5">
+                  <p className="label-tag mb-1">Detalhes</p>
+                  <pre className="border-border bg-card font-figures overflow-x-auto rounded-md border p-2 text-xs">
                     {JSON.stringify(metadata, null, 2)}
                   </pre>
                 </div>

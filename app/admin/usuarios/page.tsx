@@ -47,12 +47,12 @@ export default async function UsersPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
             <thead>
-              <tr className="text-muted-foreground border-b text-left">
-                <th className="py-2 pr-4 font-medium">Usuário</th>
-                <th className="py-2 pr-4 font-medium">Papel</th>
-                <th className="py-2 pr-4 font-medium">Status</th>
-                <th className="py-2 pr-4 font-medium">Desde</th>
-                <th className="py-2 pr-4 font-medium">Ações</th>
+              <tr className="border-border border-b border-dashed text-left">
+                <th className="label-tag py-2 pr-4">Usuário</th>
+                <th className="label-tag py-2 pr-4">Papel</th>
+                <th className="label-tag py-2 pr-4">Status</th>
+                <th className="label-tag py-2 pr-4">Desde</th>
+                <th className="label-tag py-2 pr-4">Ações</th>
               </tr>
             </thead>
             <tbody>

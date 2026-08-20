@@ -31,10 +31,10 @@ function isPointStatus(value: string): value is PointStatus {
 }
 
 const statusClasses: Record<string, string> = {
-  AVAILABLE: "bg-muted text-muted-foreground",
-  RESERVED: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
-  SOLD: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
-  CANCELLED: "bg-destructive/10 text-destructive",
+  AVAILABLE: "bg-card border-border text-foreground",
+  RESERVED: "bg-pending-bg border-pending/40 text-pending",
+  SOLD: "bg-confirmed-bg border-confirmed/40 text-confirmed",
+  CANCELLED: "bg-void-bg border-void/30 text-void/70 line-through decoration-2",
 };
 
 export default async function RaffleNumbersPage({
@@ -88,7 +88,7 @@ export default async function RaffleNumbersPage({
       <h1 className="mb-1 text-2xl font-semibold tracking-tight">
         Números — {raffle.title}
       </h1>
-      <p className="text-muted-foreground mb-4 text-sm">
+      <p className="text-muted-foreground font-figures mb-4 text-sm">
         {count ?? 0} números no total
       </p>
 
@@ -99,10 +99,10 @@ export default async function RaffleNumbersPage({
               key={s}
               href={`?${new URLSearchParams({ ...(s !== "ALL" ? { status: s } : {}) }).toString()}`}
               className={cn(
-                "rounded-full border px-3 py-1 text-xs font-medium",
+                "rounded-md border px-3 py-1 text-xs font-medium transition-colors",
                 (status ?? "ALL") === s
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "text-muted-foreground",
+                  : "border-border text-muted-foreground hover:bg-secondary",
               )}
             >
               {s === "ALL" ? "Todos" : statusLabels[s]}
@@ -115,7 +115,7 @@ export default async function RaffleNumbersPage({
             name="numero"
             defaultValue={numero}
             placeholder="Buscar número"
-            className="border-input h-8 w-32 rounded-lg border bg-transparent px-2.5 text-sm outline-none"
+            className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-8 w-32 rounded-lg border bg-transparent px-2.5 text-sm outline-none focus-visible:ring-3"
           />
         </form>
       </div>
@@ -130,8 +130,8 @@ export default async function RaffleNumbersPage({
               statusClasses[point.status],
             )}
           >
-            <span className="font-mono text-sm">{point.point_number}</span>
-            <span className="mt-0.5 text-[10px] opacity-80">
+            <span className="font-figures text-sm font-semibold">{point.point_number}</span>
+            <span className="mt-0.5 text-[9px] font-semibold tracking-wide uppercase opacity-70">
               {statusLabels[point.status]}
             </span>
           </div>

@@ -64,25 +64,24 @@ export default async function FinancialOverviewPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Saldo</p>
-          <p className="text-xl font-semibold">{centsToBRL(balance)}</p>
+      <div className="border-border bg-card ring-foreground/8 grid grid-cols-2 divide-x divide-y divide-dashed divide-border overflow-hidden rounded-lg border ring-1 sm:grid-cols-4 sm:divide-y-0">
+        <div className="p-4">
+          <p className="label-tag">Saldo</p>
+          <p className="font-figures mt-1 text-xl font-semibold">{centsToBRL(balance)}</p>
         </div>
-        <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Receitas do mês</p>
-          <p className="text-xl font-semibold">{centsToBRL(monthIncome)}</p>
+        <div className="p-4">
+          <p className="label-tag">Receitas do mês</p>
+          <p className="font-figures mt-1 text-xl font-semibold">{centsToBRL(monthIncome)}</p>
         </div>
-        <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Despesas do mês</p>
-          <p className="text-xl font-semibold">{centsToBRL(monthExpense)}</p>
+        <div className="p-4">
+          <p className="label-tag">Despesas do mês</p>
+          <p className="font-figures mt-1 text-xl font-semibold">{centsToBRL(monthExpense)}</p>
         </div>
-        <div className="rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs">Resultado do mês</p>
+        <div className="p-4">
+          <p className="label-tag">Resultado do mês</p>
           <p
             className={
-              "text-xl font-semibold " +
-              (monthResult < 0 ? "text-destructive" : "")
+              "font-figures mt-1 text-xl font-semibold " + (monthResult < 0 ? "text-void" : "")
             }
           >
             {centsToBRL(monthResult)}
@@ -90,15 +89,17 @@ export default async function FinancialOverviewPage() {
         </div>
       </div>
 
-      <p className="text-muted-foreground mt-6 text-sm">
+      <p className="text-muted-foreground mt-3 text-sm">
         Total de receitas: {centsToBRL(totalIncome)} · Total de despesas:{" "}
         {centsToBRL(totalExpense)}
       </p>
 
-      <div className="mt-8 rounded-lg border p-4">
-        <p className="text-muted-foreground text-xs">Vendas de rifas (mês) — não incluído no Saldo acima</p>
-        <p className="text-xl font-semibold">{centsToBRL(raffleRevenue.monthCents)}</p>
-        <p className="text-muted-foreground mt-1 text-xs">
+      <div className="border-border bg-secondary/50 mt-8 rounded-lg border border-dashed p-4">
+        <p className="label-tag">Vendas de rifas (mês) — não incluído no Saldo acima</p>
+        <p className="font-figures mt-1 text-xl font-semibold">
+          {centsToBRL(raffleRevenue.monthCents)}
+        </p>
+        <p className="text-muted-foreground mt-1.5 text-xs">
           Total de vendas de rifas confirmadas: {centsToBRL(raffleRevenue.totalCents)}. Uma venda
           confirmada não é automaticamente um lançamento financeiro — registre o repasse em{" "}
           <span className="font-medium">Receitas</span> (categoria &quot;Rifa&quot;) quando o

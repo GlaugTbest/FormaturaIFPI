@@ -36,7 +36,7 @@ function NavLinks({
   onNavigate?: () => void;
 }) {
   return (
-    <nav className="grid gap-1">
+    <nav className="grid gap-0.5">
       {items.map((item) => {
         const Icon = item.icon;
         const active = pathname.startsWith(item.href);
@@ -46,10 +46,10 @@ function NavLinks({
             href={item.href}
             onClick={onNavigate}
             className={cn(
-              "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
               active
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                ? "bg-primary text-primary-foreground shadow-[0_1px_2px_oklch(0.3_0.02_85_/_0.15)]"
+                : "text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-foreground",
             )}
           >
             <Icon className="size-4" />
@@ -76,18 +76,23 @@ export function AdminShell({
 
   return (
     <div className="flex min-h-screen flex-1">
-      <aside className="bg-sidebar hidden w-60 shrink-0 flex-col border-r p-4 md:flex">
-        <div className="mb-6 px-1">
-          <p className="text-sm font-semibold tracking-tight">
+      <aside className="bg-sidebar border-sidebar-border sticky top-0 hidden h-screen w-60 shrink-0 flex-col overflow-y-auto border-r p-4 md:flex">
+        <div className="mb-6 flex items-center gap-2 px-1">
+          <span className="stamp text-primary border-primary shrink-0 text-[0.65rem]">
+            CF
+          </span>
+          <p className="text-sidebar-foreground truncate text-sm font-semibold tracking-tight">
             Comissão de Formatura
           </p>
         </div>
         <div className="flex-1">
           <NavLinks items={navItems} pathname={pathname} />
         </div>
-        <div className="border-t pt-3">
-          <p className="truncate text-sm font-medium">{fullName}</p>
-          <Badge variant="secondary" className="mt-1">
+        <div className="receipt-divider pt-3">
+          <p className="text-sidebar-foreground truncate text-sm font-medium">
+            {fullName}
+          </p>
+          <Badge variant="outline" stamp className="mt-1.5">
             {roleLabels[role] ?? role}
           </Badge>
           <form action={signOut} className="mt-3">
@@ -104,7 +109,7 @@ export function AdminShell({
         </div>
       </aside>
 
-      <div className="flex min-h-screen flex-1 flex-col">
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <header className="flex items-center gap-2 border-b p-3 md:hidden">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger render={<Button variant="ghost" size="icon" />}>
@@ -121,9 +126,9 @@ export function AdminShell({
                   onNavigate={() => setMobileOpen(false)}
                 />
               </div>
-              <div className="mt-6 border-t pt-3">
+              <div className="receipt-divider mt-6 pt-3">
                 <p className="truncate text-sm font-medium">{fullName}</p>
-                <Badge variant="secondary" className="mt-1">
+                <Badge variant="outline" stamp className="mt-1.5">
                   {roleLabels[role] ?? role}
                 </Badge>
                 <form action={signOut} className="mt-3">
@@ -140,10 +145,11 @@ export function AdminShell({
               </div>
             </SheetContent>
           </Sheet>
+          <span className="stamp text-primary border-primary text-[0.65rem]">CF</span>
           <p className="text-sm font-semibold">Comissão de Formatura</p>
         </header>
 
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="bg-background flex-1 p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

@@ -55,12 +55,12 @@ export default async function IncomePage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="text-muted-foreground border-b text-left">
-                <th className="py-2 pr-4 font-medium">Descrição</th>
-                <th className="py-2 pr-4 font-medium">Categoria</th>
-                <th className="py-2 pr-4 font-medium">Valor</th>
-                <th className="py-2 pr-4 font-medium">Data</th>
-                {isAdmin ? <th className="py-2 pr-4 font-medium">Ações</th> : null}
+              <tr className="border-border border-b border-dashed text-left">
+                <th className="label-tag py-2 pr-4">Descrição</th>
+                <th className="label-tag py-2 pr-4">Categoria</th>
+                <th className="label-tag py-2 pr-4">Valor</th>
+                <th className="label-tag py-2 pr-4">Data</th>
+                {isAdmin ? <th className="label-tag py-2 pr-4">Ações</th> : null}
               </tr>
             </thead>
             <tbody>
@@ -77,11 +77,11 @@ export default async function IncomePage() {
                     categories={categories ?? []}
                   />
                 ) : (
-                  <tr key={t.id} className="border-b last:border-0">
-                    <td className="py-2 pr-4">{t.description}</td>
-                    <td className="py-2 pr-4">{t.financial_categories?.name ?? "—"}</td>
-                    <td className="py-2 pr-4">{centsToBRL(t.amount_cents)}</td>
-                    <td className="py-2 pr-4">
+                  <tr key={t.id} className="border-border border-b border-dashed last:border-0">
+                    <td className="py-2.5 pr-4">{t.description}</td>
+                    <td className="py-2.5 pr-4">{t.financial_categories?.name ?? "—"}</td>
+                    <td className="font-figures py-2.5 pr-4">{centsToBRL(t.amount_cents)}</td>
+                    <td className="font-figures py-2.5 pr-4">
                       {new Date(t.occurred_on + "T00:00:00").toLocaleDateString("pt-BR")}
                     </td>
                   </tr>

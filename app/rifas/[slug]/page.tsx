@@ -69,6 +69,9 @@ export default async function RafflePublicPage({
   for (const p of points ?? []) {
     if (p.status) counts[p.status] = (counts[p.status] ?? 0) + 1;
   }
+  const soldFraction = raffle.total_points
+    ? (counts.SOLD + counts.RESERVED) / raffle.total_points
+    : 0;
 
   return (
     <main className="mx-auto w-full max-w-4xl flex-1 p-4 py-8 sm:p-8">
@@ -77,28 +80,46 @@ export default async function RafflePublicPage({
         <img
           src={raffle.image_url}
           alt=""
-          className="mb-6 h-56 w-full rounded-xl object-cover"
+          className="ring-foreground/8 mb-6 h-56 w-full rounded-lg object-cover ring-1"
         />
       ) : null}
 
-      <h1 className="text-3xl font-semibold tracking-tight">{raffle.title}</h1>
+      <h1 className="text-3xl font-semibold tracking-tight text-balance">
+        {raffle.title}
+      </h1>
       {raffle.description ? (
-        <p className="text-muted-foreground mt-2 whitespace-pre-wrap">
+        <p className="text-muted-foreground mt-2 max-w-2xl whitespace-pre-wrap">
           {raffle.description}
         </p>
       ) : null}
 
-      <div className="mt-4 flex flex-wrap gap-4 text-sm">
-        <span className="font-medium">
-          {centsToBRL(raffle.unit_price_cents ?? 0)} por número
-        </span>
-        <span className="text-muted-foreground">
-          {counts.AVAILABLE} números disponíveis de {raffle.total_points}
-        </span>
+      <div className="border-border bg-card ring-foreground/8 mt-6 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-dashed p-4 ring-1">
+        <div>
+          <p className="label-tag">Valor por número</p>
+          <p className="font-figures text-2xl font-semibold">
+            {centsToBRL(raffle.unit_price_cents ?? 0)}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="label-tag">Disponíveis</p>
+          <p className="font-figures text-2xl font-semibold">
+            {counts.AVAILABLE}
+            <span className="text-muted-foreground text-base font-normal">
+              {" "}
+              / {raffle.total_points}
+            </span>
+          </p>
+        </div>
+        <div className="bg-secondary h-1.5 w-full overflow-hidden rounded-full">
+          <div
+            className="bg-confirmed h-full rounded-full transition-all"
+            style={{ width: `${Math.round(soldFraction * 100)}%` }}
+          />
+        </div>
       </div>
 
       {raffle.status === "CLOSED" ? (
-        <p className="bg-muted mt-6 rounded-lg p-4 text-sm">
+        <p className="border-border bg-secondary/60 mt-6 rounded-lg border border-dashed p-4 text-sm">
           Esta rifa já foi encerrada. Obrigado a todos que participaram!
         </p>
       ) : (
@@ -112,9 +133,14 @@ export default async function RafflePublicPage({
       )}
 
       {raffle.rules ? (
-        <details className="mt-8 text-sm">
-          <summary className="cursor-pointer font-medium">
-            Regulamento
+        <details className="group receipt-divider mt-8 pt-4 text-sm">
+          <summary className="cursor-pointer font-medium marker:content-none">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="text-muted-foreground transition-transform group-open:rotate-90">
+                ›
+              </span>
+              Regulamento
+            </span>
           </summary>
           <p className="text-muted-foreground mt-2 whitespace-pre-wrap">
             {raffle.rules}

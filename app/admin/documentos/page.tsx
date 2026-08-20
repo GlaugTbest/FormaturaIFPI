@@ -166,14 +166,14 @@ export default async function DocumentsPage({
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-sm">
             <thead>
-              <tr className="text-muted-foreground border-b text-left">
-                <th className="py-2 pr-4 font-medium">Arquivo</th>
-                <th className="py-2 pr-4 font-medium">Tipo</th>
-                <th className="py-2 pr-4 font-medium">Vínculo</th>
-                <th className="py-2 pr-4 font-medium">Status</th>
-                <th className="py-2 pr-4 font-medium">Enviado por</th>
-                <th className="py-2 pr-4 font-medium">Data</th>
-                <th className="py-2 pr-4 font-medium">Ações</th>
+              <tr className="border-border border-b border-dashed text-left">
+                <th className="label-tag py-2 pr-4">Arquivo</th>
+                <th className="label-tag py-2 pr-4">Tipo</th>
+                <th className="label-tag py-2 pr-4">Vínculo</th>
+                <th className="label-tag py-2 pr-4">Status</th>
+                <th className="label-tag py-2 pr-4">Enviado por</th>
+                <th className="label-tag py-2 pr-4">Data</th>
+                <th className="label-tag py-2 pr-4">Ações</th>
               </tr>
             </thead>
             <tbody>

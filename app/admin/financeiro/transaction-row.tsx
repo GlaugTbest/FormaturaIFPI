@@ -82,9 +82,9 @@ export function TransactionRow({
 
   if (mode === "edit") {
     return (
-      <tr className="border-b">
+      <tr className="border-border border-b border-dashed">
         <td colSpan={columnCount} className="py-3">
-          <div className="grid gap-2 rounded-lg border p-3">
+          <div className="border-border bg-secondary/50 grid gap-2 rounded-lg border border-dashed p-3">
             <div className="grid grid-cols-2 gap-2">
               <Input
                 value={editDescription}
@@ -139,9 +139,9 @@ export function TransactionRow({
 
   if (mode === "delete") {
     return (
-      <tr className="border-b">
+      <tr className="border-border border-b border-dashed">
         <td colSpan={columnCount} className="py-3">
-          <div className="grid gap-2 rounded-lg border p-3">
+          <div className="border-void/40 bg-void-bg grid gap-2 rounded-lg border p-3">
             <Input
               value={deleteReason}
               onChange={(e) => setDeleteReason(e.target.value)}
@@ -172,17 +172,17 @@ export function TransactionRow({
   }
 
   return (
-    <tr className="border-b last:border-0">
-      <td className="py-2 pr-4">{description}</td>
-      <td className="py-2 pr-4">{categoryName ?? "—"}</td>
+    <tr className="border-border border-b border-dashed last:border-0">
+      <td className="py-2.5 pr-4">{description}</td>
+      <td className="py-2.5 pr-4">{categoryName ?? "—"}</td>
       {supplierName !== undefined ? (
-        <td className="py-2 pr-4">{supplierName ?? "—"}</td>
+        <td className="py-2.5 pr-4">{supplierName ?? "—"}</td>
       ) : null}
-      <td className="py-2 pr-4">{centsToBRL(amountCents)}</td>
-      <td className="py-2 pr-4">
+      <td className="font-figures py-2.5 pr-4">{centsToBRL(amountCents)}</td>
+      <td className="font-figures py-2.5 pr-4">
         {new Date(occurredOn + "T00:00:00").toLocaleDateString("pt-BR")}
       </td>
-      <td className="py-2 pr-4">
+      <td className="py-2.5 pr-4">
         <div className="flex gap-1">
           <Button variant="outline" size="sm" onClick={() => setMode("edit")}>
             Editar

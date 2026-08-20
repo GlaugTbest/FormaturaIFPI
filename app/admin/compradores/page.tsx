@@ -76,11 +76,14 @@ export default async function BuyersPage({
           {q ? "Nenhum comprador encontrado." : "Nenhum comprador cadastrado ainda."}
         </p>
       ) : (
-        <div className="grid gap-2">
+        <div className="border-border bg-card rounded-lg border">
           {buyers.map((buyer) => (
-            <div key={buyer.id} className="rounded-lg border p-3 text-sm">
+            <div
+              key={buyer.id}
+              className="border-border border-b border-dashed p-3 text-sm last:border-0"
+            >
               <p className="font-medium">{buyer.full_name}</p>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground font-figures">
                 {buyer.phone}
                 {buyer.whatsapp ? ` · WhatsApp: ${buyer.whatsapp}` : ""}
                 {buyer.instagram ? ` · ${buyer.instagram}` : ""}

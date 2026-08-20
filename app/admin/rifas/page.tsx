@@ -15,10 +15,10 @@ const statusLabels: Record<string, string> = {
   CANCELLED: "Cancelada",
 };
 
-const statusVariants: Record<string, "default" | "secondary" | "destructive"> = {
-  OPEN: "default",
-  CLOSED: "secondary",
-  CANCELLED: "destructive",
+const statusVariants: Record<string, "confirmed" | "outline" | "void"> = {
+  OPEN: "confirmed",
+  CLOSED: "outline",
+  CANCELLED: "void",
 };
 
 export default async function RafflesPage() {
@@ -91,21 +91,21 @@ export default async function RafflesPage() {
               <Link
                 key={raffle.id}
                 href={`/admin/rifas/${raffle.id}`}
-                className="hover:border-ring rounded-lg border p-4 transition-colors"
+                className="bg-card ring-foreground/8 hover:ring-primary/40 rounded-lg p-4 ring-1 transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-12px_oklch(0.3_0.02_85_/_0.3)]"
               >
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="font-medium">{raffle.title}</p>
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-muted-foreground font-figures text-sm">
                       {centsToBRL(raffle.unit_price_cents)} por número ·{" "}
                       {raffle.total_points} números
                     </p>
                   </div>
-                  <Badge variant={statusVariants[raffle.status]}>
+                  <Badge variant={statusVariants[raffle.status]} stamp>
                     {statusLabels[raffle.status]}
                   </Badge>
                 </div>
-                <div className="text-muted-foreground mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                <div className="receipt-divider text-muted-foreground font-figures mt-3 flex flex-wrap gap-x-4 gap-y-1 pt-3 text-xs">
                   <span>{sold} vendidos</span>
                   <span>{reserved} reservados</span>
                   <span>{available} disponíveis</span>

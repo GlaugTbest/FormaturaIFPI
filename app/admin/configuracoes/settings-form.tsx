@@ -48,7 +48,7 @@ export function SettingsForm({
   return (
     <form onSubmit={handleSubmit} className="grid max-w-lg gap-6">
       <div className="grid gap-3">
-        <h2 className="font-medium">Evento</h2>
+        <h2 className="label-tag">Evento</h2>
         <div className="grid gap-1">
           <label className="text-sm font-medium" htmlFor="event-name">
             Nome do evento
@@ -71,8 +71,8 @@ export function SettingsForm({
         </div>
       </div>
 
-      <div className="grid gap-3">
-        <h2 className="font-medium">Rifas e uploads</h2>
+      <div className="receipt-divider grid gap-3 pt-6">
+        <h2 className="label-tag">Rifas e uploads</h2>
         <div className="grid grid-cols-2 gap-3">
           <div className="grid gap-1">
             <label className="text-sm font-medium" htmlFor="ttl-minutes">
@@ -106,7 +106,7 @@ export function SettingsForm({
         </p>
       </div>
 
-      <div>
+      <div className="receipt-divider pt-6">
         <Button type="submit" disabled={pending}>
           {pending ? "Salvando…" : "Salvar configurações"}
         </Button>

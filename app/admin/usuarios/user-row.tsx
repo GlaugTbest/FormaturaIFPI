@@ -64,15 +64,15 @@ export function UserRow({
   }
 
   return (
-    <tr className="border-b last:border-0">
-      <td className="py-2 pr-4">
+    <tr className="border-border border-b border-dashed last:border-0">
+      <td className="py-2.5 pr-4">
         <div className="font-medium">
           {fullName}
           {isSelf ? <span className="text-muted-foreground text-xs"> (você)</span> : null}
         </div>
         <div className="text-muted-foreground text-xs">{email ?? "—"}</div>
       </td>
-      <td className="py-2 pr-4">
+      <td className="py-2.5 pr-4">
         {isSelf ? (
           ROLE_LABELS[role]
         ) : (
@@ -80,7 +80,7 @@ export function UserRow({
             value={localRole}
             disabled={pending}
             onChange={(e) => handleRoleChange(e.target.value as Role)}
-            className="border-input h-8 rounded-lg border bg-transparent px-2 text-sm outline-none"
+            className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-8 rounded-lg border bg-transparent px-2 text-sm outline-none focus-visible:ring-3"
           >
             {(Object.keys(ROLE_LABELS) as Role[]).map((r) => (
               <option key={r} value={r}>
@@ -90,13 +90,15 @@ export function UserRow({
           </select>
         )}
       </td>
-      <td className="py-2 pr-4">
-        <Badge variant={active ? "secondary" : "destructive"}>
+      <td className="py-2.5 pr-4">
+        <Badge variant={active ? "confirmed" : "void"} stamp>
           {active ? "Ativo" : "Desativado"}
         </Badge>
       </td>
-      <td className="py-2 pr-4">{new Date(createdAt).toLocaleDateString("pt-BR")}</td>
-      <td className="py-2 pr-4">
+      <td className="font-figures py-2.5 pr-4">
+        {new Date(createdAt).toLocaleDateString("pt-BR")}
+      </td>
+      <td className="py-2.5 pr-4">
         {isSelf ? null : (
           <Button
             variant={active ? "destructive" : "outline"}

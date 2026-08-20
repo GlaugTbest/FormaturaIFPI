@@ -6,6 +6,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -258,7 +259,7 @@ export function PurchaseFlow({
 
   if (!reservation) {
     return (
-      <div className="mt-8">
+      <div className="mt-8 pb-24">
         <h2 className="mb-3 text-lg font-semibold">Escolha seus números</h2>
         <NumberGrid
           raffleId={raffleId}
@@ -266,29 +267,50 @@ export function PurchaseFlow({
           onToggle={toggleSelection}
           refreshKey={gridRefreshKey}
         />
-        <div className="bg-background sticky bottom-0 mt-4 flex items-center justify-between gap-4 border-t py-3">
-          <p className="text-sm">
-            <strong>{selected.length}</strong> selecionados ·{" "}
-            {centsToBRL(totalCents)}
-          </p>
-          <Button onClick={handleReserve} disabled={reserving || selected.length === 0}>
-            {reserving ? "Reservando..." : "Reservar e continuar"}
+        <div className="bg-card ring-foreground/8 sticky bottom-3 mt-5 flex items-center justify-between gap-4 rounded-lg p-3.5 shadow-[0_4px_16px_-4px_oklch(0.3_0.02_85_/_0.25)] ring-1">
+          <div>
+            <p className="label-tag">
+              {selected.length} selecionado{selected.length === 1 ? "" : "s"}
+            </p>
+            <p className="font-figures text-lg font-semibold">
+              {centsToBRL(totalCents)}
+            </p>
+          </div>
+          <Button
+            size="lg"
+            onClick={handleReserve}
+            disabled={reserving || selected.length === 0}
+          >
+            {reserving ? "Reservando…" : "Reservar e continuar"}
           </Button>
         </div>
       </div>
     );
   }
 
+  const urgent = remainingSeconds > 0 && remainingSeconds < 60;
+
   return (
     <div className="mt-8 max-w-md">
-      <div className="bg-muted mb-4 rounded-lg p-3 text-sm">
-        <p>
-          Números reservados: <strong>{reservation.pointNumbers.join(", ")}</strong>
+      <div
+        className={cn(
+          "mb-5 flex items-center justify-between gap-3 rounded-lg border p-3.5",
+          urgent
+            ? "border-void/40 bg-void-bg text-void"
+            : "border-pending/40 bg-pending-bg text-pending",
+        )}
+      >
+        <div>
+          <p className="label-tag text-current opacity-80">
+            Reservado · {reservation.pointNumbers.join(", ")}
+          </p>
+          <p className="font-figures text-sm font-semibold">
+            {minutes}:{String(seconds).padStart(2, "0")} restantes
+          </p>
+        </div>
+        <p className="font-figures text-lg font-semibold text-current">
+          {centsToBRL(totalCents)}
         </p>
-        <p className="text-muted-foreground">
-          Tempo restante: {minutes}:{String(seconds).padStart(2, "0")}
-        </p>
-        <p className="mt-1 font-medium">Total: {centsToBRL(totalCents)}</p>
       </div>
 
       <Form {...form}>
@@ -355,9 +377,9 @@ export function PurchaseFlow({
                 <FormControl>
                   <select
                     {...field}
-                    className="border-input h-8 w-full rounded-lg border bg-transparent px-2.5 text-sm outline-none"
+                    className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-lg border bg-transparent px-2.5 text-sm outline-none focus-visible:ring-3"
                   >
-                    <option value="">Selecione...</option>
+                    <option value="">Selecione…</option>
                     {paymentOptions.map((m) => (
                       <option key={m.id} value={m.id ?? ""}>
                         {m.name}
@@ -371,39 +393,37 @@ export function PurchaseFlow({
           />
 
           {isPix ? (
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">
-                Comprovante do PIX
-              </label>
+            <div className="border-border bg-secondary/60 grid gap-2 rounded-lg border border-dashed p-3.5">
+              <label className="text-sm font-medium">Comprovante do PIX</label>
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp,application/pdf"
                 onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
-                className="text-sm"
+                className="text-muted-foreground file:bg-card file:text-foreground file:border-border text-xs file:mr-3 file:rounded-md file:border file:px-2.5 file:py-1.5 file:text-xs file:font-medium"
               />
               {uploading ? (
-                <p className="text-muted-foreground text-xs">Enviando...</p>
+                <p className="text-pending text-xs font-medium">Enviando…</p>
               ) : null}
               {attachmentId ? (
-                <p className="text-xs text-emerald-600">
-                  Comprovante anexado.
+                <p className="text-confirmed flex items-center gap-1 text-xs font-medium">
+                  <span aria-hidden>✓</span> Comprovante anexado
                 </p>
               ) : null}
             </div>
           ) : selectedPaymentMethod ? (
-            <label className="flex items-start gap-2 text-sm">
+            <label className="border-border bg-secondary/60 flex items-start gap-2.5 rounded-lg border border-dashed p-3.5 text-sm">
               <input
                 type="checkbox"
                 checked={cashConfirmed}
                 onChange={(e) => setCashConfirmed(e.target.checked)}
-                className="mt-0.5"
+                className="accent-primary mt-0.5"
               />
               Confirmo que farei o pagamento em mãos com a comissão.
             </label>
           ) : null}
 
-          <Button type="submit" disabled={submitting || uploading}>
-            {submitting ? "Finalizando..." : "Finalizar registro"}
+          <Button type="submit" size="lg" disabled={submitting || uploading}>
+            {submitting ? "Finalizando…" : "Finalizar registro"}
           </Button>
         </form>
       </Form>

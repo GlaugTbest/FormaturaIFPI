@@ -16,10 +16,11 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center p-4">
+    <main className="bg-secondary/40 flex flex-1 items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        <div className="mb-6 text-center">
-          <h1 className="text-xl font-semibold tracking-tight">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <span className="stamp text-primary border-primary text-xs">CF</span>
+          <h1 className="mt-3 text-xl font-semibold tracking-tight">
             Comissão de Formatura
           </h1>
           <p className="text-muted-foreground text-sm">

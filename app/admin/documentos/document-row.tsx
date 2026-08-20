@@ -98,9 +98,9 @@ export function DocumentRow({
 
   if (mode === "link") {
     return (
-      <tr className="border-b">
+      <tr className="border-border border-b border-dashed">
         <td colSpan={7} className="py-3">
-          <div className="grid gap-2 rounded-lg border p-3">
+          <div className="border-border bg-secondary/50 grid gap-2 rounded-lg border border-dashed p-3">
             <div className="grid grid-cols-2 gap-2">
               <select
                 value={linkType}
@@ -145,9 +145,9 @@ export function DocumentRow({
 
   if (mode === "description") {
     return (
-      <tr className="border-b">
+      <tr className="border-border border-b border-dashed">
         <td colSpan={7} className="py-3">
-          <div className="grid gap-2 rounded-lg border p-3">
+          <div className="border-border bg-secondary/50 grid gap-2 rounded-lg border border-dashed p-3">
             <Input
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
@@ -168,26 +168,26 @@ export function DocumentRow({
   }
 
   return (
-    <tr className="border-b last:border-0">
-      <td className="py-2 pr-4">
+    <tr className="border-border border-b border-dashed last:border-0">
+      <td className="py-2.5 pr-4">
         <div className="font-medium">{fileName}</div>
         <div className="text-muted-foreground text-xs">
           {(fileSize / 1024).toFixed(0)} KB
           {description ? ` · ${description}` : ""}
         </div>
       </td>
-      <td className="py-2 pr-4">
+      <td className="py-2.5 pr-4">
         <Badge variant="outline">{ATTACHMENT_KIND_LABELS[kind as keyof typeof ATTACHMENT_KIND_LABELS] ?? kind}</Badge>
       </td>
-      <td className="py-2 pr-4">{entityLabel ?? "—"}</td>
-      <td className="py-2 pr-4">
-        <Badge variant={status === "UPLOADED" ? "secondary" : status === "FAILED" ? "destructive" : "outline"}>
+      <td className="py-2.5 pr-4">{entityLabel ?? "—"}</td>
+      <td className="py-2.5 pr-4">
+        <Badge variant={status === "UPLOADED" ? "confirmed" : status === "FAILED" ? "void" : "pending"} stamp>
           {ATTACHMENT_STATUS_LABELS[status] ?? status}
         </Badge>
       </td>
-      <td className="py-2 pr-4">{uploadedByName ?? "—"}</td>
-      <td className="py-2 pr-4">{new Date(uploadedAt).toLocaleString("pt-BR")}</td>
-      <td className="py-2 pr-4">
+      <td className="py-2.5 pr-4">{uploadedByName ?? "—"}</td>
+      <td className="font-figures py-2.5 pr-4">{new Date(uploadedAt).toLocaleString("pt-BR")}</td>
+      <td className="py-2.5 pr-4">
         <div className="flex flex-wrap gap-1">
           <Button variant="outline" size="sm" disabled={downloading} onClick={handleDownload}>
             {downloading ? "Gerando…" : "Baixar"}

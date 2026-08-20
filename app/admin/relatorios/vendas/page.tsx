@@ -6,6 +6,7 @@ import { getCurrentProfile } from "@/lib/auth/session";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LinkButton } from "@/components/ui/link-button";
+import { Badge } from "@/components/ui/badge";
 import { centsToBRL } from "@/lib/money";
 import { querySalesReport, parseSalesReportFilters } from "@/lib/reports/sales";
 
@@ -169,20 +170,26 @@ export default async function SalesReportPage({
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-sm">
             <thead>
-              <tr className="text-muted-foreground border-b text-left">
-                <th className="py-2 pr-4 font-medium">Comprador</th>
-                <th className="py-2 pr-4 font-medium">Números</th>
-                <th className="py-2 pr-4 font-medium">
-                  <Link href={`?${buildQuery(sp, { sort: "amount_cents", dir: sp.sort === "amount_cents" && sp.dir === "asc" ? "desc" : "asc", page: undefined })}`}>
+              <tr className="border-border border-b border-dashed text-left">
+                <th className="label-tag py-2 pr-4">Comprador</th>
+                <th className="label-tag py-2 pr-4">Números</th>
+                <th className="label-tag py-2 pr-4">
+                  <Link
+                    className="hover:text-foreground"
+                    href={`?${buildQuery(sp, { sort: "amount_cents", dir: sp.sort === "amount_cents" && sp.dir === "asc" ? "desc" : "asc", page: undefined })}`}
+                  >
                     Valor
                   </Link>
                 </th>
-                <th className="py-2 pr-4 font-medium">Pagamento</th>
-                <th className="py-2 pr-4 font-medium">Vendedor</th>
-                <th className="py-2 pr-4 font-medium">Rifa</th>
-                <th className="py-2 pr-4 font-medium">Status</th>
-                <th className="py-2 pr-4 font-medium">
-                  <Link href={`?${buildQuery(sp, { sort: "created_at", dir: sp.sort !== "amount_cents" && sp.dir === "asc" ? "desc" : "asc", page: undefined })}`}>
+                <th className="label-tag py-2 pr-4">Pagamento</th>
+                <th className="label-tag py-2 pr-4">Vendedor</th>
+                <th className="label-tag py-2 pr-4">Rifa</th>
+                <th className="label-tag py-2 pr-4">Status</th>
+                <th className="label-tag py-2 pr-4">
+                  <Link
+                    className="hover:text-foreground"
+                    href={`?${buildQuery(sp, { sort: "created_at", dir: sp.sort !== "amount_cents" && sp.dir === "asc" ? "desc" : "asc", page: undefined })}`}
+                  >
                     Data
                   </Link>
                 </th>
@@ -190,18 +197,26 @@ export default async function SalesReportPage({
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.id} className="border-b last:border-0">
-                  <td className="py-2 pr-4">
+                <tr key={row.id} className="border-border border-b border-dashed last:border-0">
+                  <td className="py-2.5 pr-4">
                     <div>{row.buyerName}</div>
-                    <div className="text-muted-foreground text-xs">{row.buyerPhone}</div>
+                    <div className="text-muted-foreground font-figures text-xs">
+                      {row.buyerPhone}
+                    </div>
                   </td>
-                  <td className="py-2 pr-4 font-mono">{row.pointNumbers.join(", ")}</td>
-                  <td className="py-2 pr-4">{centsToBRL(row.amountCents)}</td>
-                  <td className="py-2 pr-4">{row.paymentMethod}</td>
-                  <td className="py-2 pr-4">{row.sellerName}</td>
-                  <td className="py-2 pr-4">{row.raffleTitle}</td>
-                  <td className="py-2 pr-4">{STATUS_LABELS[row.status] ?? row.status}</td>
-                  <td className="py-2 pr-4">{new Date(row.createdAt).toLocaleString("pt-BR")}</td>
+                  <td className="font-figures py-2.5 pr-4">{row.pointNumbers.join(", ")}</td>
+                  <td className="font-figures py-2.5 pr-4">{centsToBRL(row.amountCents)}</td>
+                  <td className="py-2.5 pr-4">{row.paymentMethod}</td>
+                  <td className="py-2.5 pr-4">{row.sellerName}</td>
+                  <td className="py-2.5 pr-4">{row.raffleTitle}</td>
+                  <td className="py-2.5 pr-4">
+                    <Badge variant={row.status === "CONFIRMED" ? "confirmed" : "void"} stamp>
+                      {STATUS_LABELS[row.status] ?? row.status}
+                    </Badge>
+                  </td>
+                  <td className="font-figures py-2.5 pr-4">
+                    {new Date(row.createdAt).toLocaleString("pt-BR")}
+                  </td>
                 </tr>
               ))}
             </tbody>

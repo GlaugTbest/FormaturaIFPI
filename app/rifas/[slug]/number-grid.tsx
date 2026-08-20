@@ -16,11 +16,17 @@ const statusLabels: Record<PointStatus, string> = {
   CANCELLED: "Cancelado",
 };
 
+// Each stub reads its state the way a stamped ticket does: available is
+// blank paper waiting to be claimed, reserved carries a pending tint, sold
+// carries the confirmed stamp ink, cancelled is struck through like a
+// voided receipt line.
 const statusClasses: Record<PointStatus, string> = {
-  AVAILABLE: "bg-muted hover:bg-primary/10 cursor-pointer",
-  RESERVED: "bg-amber-500/15 text-amber-700 dark:text-amber-400 cursor-not-allowed",
-  SOLD: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 cursor-not-allowed",
-  CANCELLED: "bg-destructive/10 text-destructive cursor-not-allowed",
+  AVAILABLE:
+    "bg-card border-border text-foreground hover:border-primary hover:bg-accent cursor-pointer",
+  RESERVED: "bg-pending-bg border-pending/40 text-pending cursor-not-allowed",
+  SOLD: "bg-confirmed-bg border-confirmed/40 text-confirmed cursor-not-allowed",
+  CANCELLED:
+    "bg-void-bg border-void/30 text-void/70 line-through decoration-2 cursor-not-allowed",
 };
 
 export function NumberGrid({
@@ -40,6 +46,7 @@ export function NumberGrid({
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [justChanged, setJustChanged] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     let cancelled = false;
@@ -55,7 +62,22 @@ export function NumberGrid({
       .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1)
       .then(({ data, count }) => {
         if (cancelled) return;
-        setPoints((data as typeof points) ?? []);
+        const next = (data as typeof points) ?? [];
+        setPoints((prev) => {
+          if (prev.length) {
+            const prevStatus = new Map(prev.map((p) => [p.point_number, p.status]));
+            const changed = new Set(
+              next
+                .filter((p) => prevStatus.get(p.point_number) === "AVAILABLE" && p.status !== "AVAILABLE")
+                .map((p) => p.point_number),
+            );
+            if (changed.size) {
+              setJustChanged(changed);
+              setTimeout(() => setJustChanged(new Set()), 900);
+            }
+          }
+          return next;
+        });
         setTotal(count ?? 0);
         setLoading(false);
       });
@@ -69,14 +91,15 @@ export function NumberGrid({
 
   return (
     <div>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(56px,1fr))] gap-2">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(60px,1fr))] gap-2.5">
         {loading
           ? Array.from({ length: 40 }).map((_, i) => (
-              <div key={i} className="bg-muted h-12 animate-pulse rounded-md" />
+              <div key={i} className="bg-muted h-14 animate-pulse rounded-md" />
             ))
           : points.map((point) => {
               const isSelected = selected.includes(point.point_number);
               const clickable = point.status === "AVAILABLE";
+              const pulsing = justChanged.has(point.point_number);
               return (
                 <button
                   key={point.point_number}
@@ -85,13 +108,19 @@ export function NumberGrid({
                   onClick={() => clickable && onToggle(point.point_number)}
                   title={statusLabels[point.status]}
                   className={cn(
-                    "flex flex-col items-center rounded-md border py-2 text-xs font-medium transition-colors",
+                    "relative flex flex-col items-center rounded-md border py-2.5 text-xs font-medium transition-all duration-200",
                     isSelected
-                      ? "border-primary bg-primary text-primary-foreground"
+                      ? "border-primary bg-primary text-primary-foreground shadow-[0_3px_8px_-2px_var(--primary)] -translate-y-0.5"
                       : statusClasses[point.status],
+                    pulsing && "animate-[stub-pulse_0.9s_ease-out]",
                   )}
                 >
-                  <span className="font-mono text-sm">{point.point_number}</span>
+                  <span className="font-figures text-sm font-semibold">
+                    {point.point_number}
+                  </span>
+                  <span className="mt-0.5 text-[9px] leading-none font-semibold tracking-wide uppercase opacity-70">
+                    {statusLabels[point.status]}
+                  </span>
                 </button>
               );
             })}
@@ -107,8 +136,8 @@ export function NumberGrid({
           >
             Anterior
           </Button>
-          <span className="text-muted-foreground">
-            Página {page + 1} de {totalPages}
+          <span className="text-muted-foreground font-figures">
+            {page + 1} / {totalPages}
           </span>
           <Button
             variant="outline"
@@ -121,11 +150,17 @@ export function NumberGrid({
         </div>
       ) : null}
 
-      <div className="text-muted-foreground mt-4 flex flex-wrap gap-3 text-xs">
+      <div className="text-muted-foreground mt-5 flex flex-wrap gap-4 text-xs">
         {(Object.keys(statusLabels) as PointStatus[]).map((key) => (
           <span key={key} className="flex items-center gap-1.5">
             <span
-              className={cn("size-2.5 rounded-full", statusClasses[key])}
+              className={cn(
+                "size-2.5 rounded-full border",
+                key === "AVAILABLE" && "border-border bg-card",
+                key === "RESERVED" && "border-pending/40 bg-pending-bg",
+                key === "SOLD" && "border-confirmed/40 bg-confirmed-bg",
+                key === "CANCELLED" && "border-void/30 bg-void-bg",
+              )}
             />
             {statusLabels[key]}
           </span>

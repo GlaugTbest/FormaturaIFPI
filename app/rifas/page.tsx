@@ -28,12 +28,12 @@ export default async function PublicRafflesPage() {
           Nenhuma rifa disponível no momento.
         </p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
           {raffles.map((raffle) => (
             <Link
               key={raffle.id}
               href={`/rifas/${raffle.slug}`}
-              className="hover:border-ring flex flex-col overflow-hidden rounded-xl border transition-colors"
+              className="bg-card ring-foreground/8 group relative flex flex-col overflow-hidden rounded-lg shadow-[0_1px_2px_oklch(0.3_0.02_85_/_0.06)] ring-1 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-12px_oklch(0.3_0.02_85_/_0.25)]"
             >
               {raffle.image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -42,12 +42,25 @@ export default async function PublicRafflesPage() {
                   alt=""
                   className="h-40 w-full object-cover"
                 />
-              ) : null}
-              <div className="p-4">
-                <p className="font-medium">{raffle.title}</p>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  {centsToBRL(raffle.unit_price_cents ?? 0)} por número
-                  {raffle.status === "CLOSED" ? " · Encerrada" : ""}
+              ) : (
+                <div
+                  aria-hidden
+                  className="bg-secondary/60 flex h-24 w-full items-center justify-center"
+                >
+                  <span className="stamp text-muted-foreground border-muted-foreground text-xs">
+                    Rifa
+                  </span>
+                </div>
+              )}
+              <div className="receipt-divider flex items-start justify-between gap-3 p-4">
+                <div className="min-w-0">
+                  <p className="line-clamp-2 font-medium text-balance">{raffle.title}</p>
+                  <p className="label-tag mt-1.5">
+                    {raffle.status === "CLOSED" ? "Encerrada" : "Números disponíveis"}
+                  </p>
+                </div>
+                <p className="font-figures text-primary shrink-0 text-lg font-semibold">
+                  {centsToBRL(raffle.unit_price_cents ?? 0)}
                 </p>
               </div>
             </Link>

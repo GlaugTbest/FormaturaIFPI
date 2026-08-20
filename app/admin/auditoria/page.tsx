@@ -126,12 +126,12 @@ export default async function AuditLogPage({
         <div className="overflow-x-auto">
           <table className="w-full min-w-[800px] text-sm">
             <thead>
-              <tr className="text-muted-foreground border-b text-left">
-                <th className="py-2 pr-4 font-medium">Ação</th>
-                <th className="py-2 pr-4 font-medium">Entidade</th>
-                <th className="py-2 pr-4 font-medium">Usuário</th>
-                <th className="py-2 pr-4 font-medium">Data</th>
-                <th className="py-2 pr-4 font-medium"></th>
+              <tr className="border-border border-b border-dashed text-left">
+                <th className="label-tag py-2 pr-4">Ação</th>
+                <th className="label-tag py-2 pr-4">Entidade</th>
+                <th className="label-tag py-2 pr-4">Usuário</th>
+                <th className="label-tag py-2 pr-4">Data</th>
+                <th className="label-tag py-2 pr-4"></th>
               </tr>
             </thead>
             <tbody>
